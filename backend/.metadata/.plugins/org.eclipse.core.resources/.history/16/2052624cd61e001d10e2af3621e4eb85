@@ -1,0 +1,66 @@
+package com.shaunhaldane.grocerybudgetappbackend.repository;
+
+import java.util.List;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
+
+import com.shaunhaldane.grocerybudgetappbackend.DTO.AnnualCostsDTO;
+import com.shaunhaldane.grocerybudgetappbackend.DTO.TotalSpendOnIndividualItemDTO;
+import com.shaunhaldane.grocerybudgetappbackend.model.Item;
+
+@Repository
+public interface ItemRepository extends JpaRepository<Item, Long>{
+
+	@Query("SELECT i from Item i WHERE i.disposalType = 'NONE' and i.user_id = ?")
+	List<Item> getAllItemsInStockByUserId(Long user_id);
+
+	@Query("SELECT new com.shaunhaldane.grocerybudgetappbackend.DTO.AnnualCostsDTO(SUM(i.price), "
+			+ "EXTRACT(month from i.datePurchased) as month, "
+			+ "EXTRACT(year from i.datePurchased) as year) "
+			+ "FROM Item i "
+			+ "WHERE EXTRACT(year from i.datePurchased) = :year "
+			+ "group by month, year")
+	List<AnnualCostsDTO> getTotalSpentPerMonthForYear(@Param("year") int year);
+	
+	@Query("SELECT new com.shaunhaldane.grocerybudgetappbackend.DTO.AnnualCostsDTO(SUM(i.price), "
+			+ "EXTRACT(month from i.datePurchased) as month, "
+			+ "EXTRACT(year from i.datePurchased) as year) "
+			+ "FROM Item i "
+			+ "WHERE EXTRACT(year from i.datePurchased) = :year "
+			+ "and i.disposalType = 'WASTED' "
+			+ "group by month, year")
+	List<AnnualCostsDTO> getTotalWastedPerMonthForYear(@Param("year") int year);
+	
+	@Query("SELECT new com.shaunhaldane.grocerybudgetappbackend.DTO.AnnualCostsDTO(SUM(i.price), "
+			+ "EXTRACT(month from i.datePurchased) as month, "
+			+ "EXTRACT(year from i.datePurchased) as year) "
+			+ "FROM Item i "
+			+ "WHERE EXTRACT(year from i.datePurchased) = :year "
+			+ "and i.disposalType = 'USED' "
+			+ "group by month, year")
+	List<AnnualCostsDTO> getTotalUsedPerMonthForYear(@Param("year") int year);
+	
+	@Query("SELECT new com.shaunhaldane.grocerybudgetappbackend.DTO.TotalSpendOnIndividualItemDTO(SUM(i.price), "
+			+ "i.name) "
+			+ "FROM Item i "
+			+ "group by i.name")
+	List<TotalSpendOnIndividualItemDTO> getTotalSpentForAllItems();
+	
+	@Query("SELECT new com.shaunhaldane.grocerybudgetappbackend.DTO.TotalSpendOnIndividualItemDTO(SUM(i.price), "
+			+ "i.name) "
+			+ "FROM Item i "
+			+ "WHERE i.disposalType = 'WASTED' "
+			+ "group by i.name")
+	List<TotalSpendOnIndividualItemDTO> getTotalWastedForAllItems();
+	
+	@Query("SELECT new com.shaunhaldane.grocerybudgetappbackend.DTO.TotalSpendOnIndividualItemDTO(SUM(i.price), "
+			+ "i.name) "
+			+ "FROM Item i "
+			+ "WHERE i.disposalType = 'USED' "
+			+ "group by i.name")
+	List<TotalSpendOnIndividualItemDTO> getTotalUsedForAllItems();
+
+}

@@ -1,0 +1,105 @@
+package com.shaunhaldane.grocerybudgetappbackend.controller;
+
+import java.util.List;
+
+import javax.validation.Valid;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.shaunhaldane.grocerybudgetappbackend.model.Item;
+import com.shaunhaldane.grocerybudgetappbackend.service.ItemService;
+import com.shaunhaldane.grocerybudgetappbackend.DTO.AnnualCostsDTO;
+import com.shaunhaldane.grocerybudgetappbackend.DTO.TotalSpendOnIndividualItemDTO;
+import com.shaunhaldane.grocerybudgetappbackend.exception.GlobalExceptionHandler;
+
+@CrossOrigin(origins = "*", maxAge = 3600)
+@RestController
+@RequestMapping("/api/user")
+@PreAuthorize("hasRole('USER')")
+public class UserController {
+	
+	@Autowired
+	private ItemService itemService;
+	
+	@Autowired
+	private GlobalExceptionHandler globalExceptionHandler;
+
+	
+	///// Dashboard
+	
+	// Get all items where disposalType = none
+	@GetMapping("/items/{userId}")
+	public Iterable<Item> getAllItemsInStock(@PathVariable Long userId){
+		return itemService.getAllItemsInStock(userId);
+		}
+	
+	 // Use or waste item
+	 @PutMapping("/items")
+	 public ResponseEntity<?> editItem(@RequestBody Item item) {
+		 return itemService.editItem(item.getId(), item);
+	 }
+	 
+	 // Delete item
+	 @ResponseStatus(value = HttpStatus.NO_CONTENT)
+	 @DeleteMapping("/items/{id}")
+	 public void deleteItemById(@PathVariable Long id) {
+		 itemService.deleteItemById(id);
+		 }
+	 
+	 // Add new item
+	 @PostMapping("/items/addItem")
+	 public ResponseEntity<?> addNewItem(@Valid @RequestBody Item item, BindingResult result) {
+		 ResponseEntity<?> errorMap = globalExceptionHandler.MapValidationErrors(result);
+		 if(errorMap!=null)return errorMap;
+		 Item newItem = itemService.saveItem(item);
+		 return new ResponseEntity<Item>(newItem, HttpStatus.CREATED);
+		 }
+	 
+	 
+	 ///// Financial data
+	 
+	 @GetMapping("/financialData/spent/{year}")
+	 public List<AnnualCostsDTO> getTotalSpentPerMonthForYear(@PathVariable int year) {
+		 return itemService.getTotalSpentPerMonthForYear(year);
+	 }
+	 
+	 @GetMapping("/financialData/wasted/{year}")
+	 public List<AnnualCostsDTO> getTotalWastedPerMonthForYear(@PathVariable int year) {
+		 return itemService.getTotalWastedPerMonthForYear(year);
+	 }
+	 
+	 @GetMapping("/financialData/used/{year}")
+	 public List<AnnualCostsDTO> getTotalUsedPerMonthForYear(@PathVariable int year) {
+		 return itemService.getTotalUsedPerMonthForYear(year);
+	 }
+	 
+	 @GetMapping("/financialData/spent/items")
+	 public List<TotalSpendOnIndividualItemDTO> getTotalSpentForAllItems() {
+		 return itemService.getTotalSpentForAllItems();
+	 }
+	 
+	 @GetMapping("/financialData/wasted/items")
+	 public List<TotalSpendOnIndividualItemDTO> getTotalWastedForAllItems() {
+		 return itemService.getTotalWastedForAllItems();
+	 }
+	 
+	 @GetMapping("/financialData/used/items")
+	 public List<TotalSpendOnIndividualItemDTO> getTotalUsedForAllItems() {
+		 return itemService.getTotalUsedForAllItems();
+	 }
+
+}

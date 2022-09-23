@@ -1,0 +1,27 @@
+package com.shaunhaldane.grocerybudgetappbackend.service;
+
+import java.util.List;
+import java.util.Optional;
+
+import org.springframework.stereotype.Service;
+
+import com.shaunhaldane.grocerybudgetappbackend.exception.ResourceNotFoundException;
+import com.shaunhaldane.grocerybudgetappbackend.model.User;
+import com.shaunhaldane.grocerybudgetappbackend.repository.UserRepository;
+
+@Service
+public class AdminService {
+	
+	private UserRepository userRepository;
+	
+	public Optional<User> getUser() {
+		return userRepository.findByUsername("shaun");
+	}
+	
+	public void deleteUser(Long id) {
+		User existingUser = userRepository.findById(id)
+				.orElseThrow(() -> new ResourceNotFoundException("User not found for the id:"+id));
+		userRepository.delete(existingUser);
+	}
+
+}

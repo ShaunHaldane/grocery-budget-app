@@ -1,0 +1,5 @@
+package com.shaunhaldane.grocerybudgetappbackend.controller;
+
+public class UserController {
+
+}

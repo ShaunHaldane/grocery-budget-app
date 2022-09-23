@@ -1,0 +1,5 @@
+package com.shaunhaldane.grocerybudgetappbackend.payload.request;
+
+public class SignupRequest {
+
+}

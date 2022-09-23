@@ -1,0 +1,98 @@
+package com.shaunhaldane.grocerybudgetappbackend.service;
+
+import java.util.List;
+import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+
+import com.shaunhaldane.grocerybudgetappbackend.DTO.AnnualCostsDTO;
+import com.shaunhaldane.grocerybudgetappbackend.DTO.TotalSpendOnIndividualItemDTO;
+import com.shaunhaldane.grocerybudgetappbackend.exception.ResourceNotFoundException;
+import com.shaunhaldane.grocerybudgetappbackend.model.Item;
+import com.shaunhaldane.grocerybudgetappbackend.repository.ItemRepository;
+import com.shaunhaldane.grocerybudgetappbackend.security.service.UserDetailsServiceImpl;
+
+
+@Service
+public class ItemService {
+	
+	@Autowired
+	private ItemRepository itemRepo;
+	
+	@Autowired
+	private UserDetailsServiceImpl userService;
+
+	
+	/////Dashboard
+	
+	// Get all items where disposal type = none
+	public Iterable<Item> getAllItemsInStock() {
+		return itemRepo.getAllItemsInStock(
+				userService.getLoggedInUser().getId());
+	}
+
+	// Waste or use item
+	public ResponseEntity<?> editItem(long id, Item item) {
+		java.util.Optional<Item> itemData = itemRepo.findById(id);
+		if (itemData.isPresent()) {
+			Item _item = itemData.get();
+			_item.setName(item.getName());
+			_item.setPrice(item.getPrice());
+			_item.setDatePurchased(item.getDatePurchased());
+			_item.setDateRemoved(item.getDateRemoved());
+			_item.setDisposalType(item.getDisposalType());
+			return new ResponseEntity<>(itemRepo.save(_item), HttpStatus.OK);
+		} else {
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		}
+	}
+	
+	// Delete item
+	public void deleteItemById(Long id) {
+		Item item = getItemById(id);
+		itemRepo.delete(item);
+	}
+	
+	public Item getItemById(Long id){
+		Optional<Item> item = itemRepo.findById(id);
+		if (item.isPresent()) {
+			return item.get();
+		}
+		throw new ResourceNotFoundException("Expense is not found for the id "+id);
+	}
+	
+	// Add new item
+	public Item saveItem(Item item) {
+		item.setUser(userService.getLoggedInUser());
+		return itemRepo.save(item);
+		}
+
+	
+	///// Financial data
+	public List<AnnualCostsDTO> getTotalSpentPerMonthForYear(int year) {
+		return itemRepo.getTotalSpentPerMonthForYear(year, userService.getLoggedInUser().getId());
+	}
+	
+	public List<AnnualCostsDTO> getTotalWastedPerMonthForYear(int year) {
+		return itemRepo.getTotalWastedPerMonthForYear(year, userService.getLoggedInUser().getId());
+	}
+	
+	public List<AnnualCostsDTO> getTotalUsedPerMonthForYear(int year) {
+		return itemRepo.getTotalUsedPerMonthForYear(year, userService.getLoggedInUser().getId());
+	}
+	
+	public List<TotalSpendOnIndividualItemDTO> getTotalSpentForAllItems() {
+		return itemRepo.getTotalSpentForAllItems(userService.getLoggedInUser().getId());
+	}
+	
+	public List<TotalSpendOnIndividualItemDTO> getTotalWastedForAllItems() {
+		return itemRepo.getTotalWastedForAllItems(userService.getLoggedInUser().getId());
+	}
+	
+	public List<TotalSpendOnIndividualItemDTO> getTotalUsedForAllItems() {
+		return itemRepo.getTotalUsedForAllItems(userService.getLoggedInUser().getId());
+	}
+}

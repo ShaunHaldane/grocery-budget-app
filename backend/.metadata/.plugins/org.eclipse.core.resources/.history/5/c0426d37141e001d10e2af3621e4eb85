@@ -1,0 +1,5 @@
+package com.shaunhaldane.grocerybudgetappbackend.repository;
+
+public interface RoleRepository {
+
+}

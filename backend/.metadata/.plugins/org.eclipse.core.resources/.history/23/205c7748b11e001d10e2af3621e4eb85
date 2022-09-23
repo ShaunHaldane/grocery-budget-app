@@ -1,0 +1,5 @@
+package com.shaunhaldane.grocerybudgetappbackend.DTO;
+
+public class TotalSpendOnIndividualItemDTO {
+
+}

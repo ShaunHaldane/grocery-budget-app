@@ -1,0 +1,19 @@
+<h3><br></h3>
+<div class="container-fluid col-10 text-center">
+    <h3>Users</h3> 
+    <h3><br></h3>         
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Email</th>
+        </tr>
+      </thead>
+      <tbody *ngFor="let c of content">
+        <tr>
+          <td>{{c.name}}</td>
+          <td>{{c.email}}</td>
+        </tr>
+      </tbody>
+    </table>
+  

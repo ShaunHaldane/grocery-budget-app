@@ -1,0 +1,25 @@
+<h3><br></h3>
+<div class="container-fluid col-10 text-center">
+    <h3>Items in Stock</h3> 
+    <h3><br></h3>           
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Item</th>
+          <th>Price</th>
+          <th>Expiry Date</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody *ngFor="let item of items">
+        <tr>
+          <td>{{item.name}}</td>
+          <td>{{item.price}}</td>
+          <td>{{item.dateExpired >= dateRemoved ? item.dateExpired : "Expired"}}</td>
+          <td>
+            <button (click)="usedItem(item)" class="btn btn-primary mr-1">Used</button>
+            <button (click)="wastedItem(item)" class="btn btn-danger ml-1">Wasted</button>
+        </td>
+        </tr>
+      </tbody>
+    </table>

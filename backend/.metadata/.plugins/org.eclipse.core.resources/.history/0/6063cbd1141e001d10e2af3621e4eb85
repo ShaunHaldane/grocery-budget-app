@@ -1,0 +1,5 @@
+package com.shaunhaldane.grocerybudgetappbackend.security.service;
+
+public class UserDetailsImpl {
+
+}

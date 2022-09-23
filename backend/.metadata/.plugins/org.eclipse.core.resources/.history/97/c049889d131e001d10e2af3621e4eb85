@@ -1,0 +1,5 @@
+package com.shaunhaldane.grocerybudgetappbackend.model;
+
+public class User {
+
+}

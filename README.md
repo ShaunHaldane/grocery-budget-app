@@ -10,9 +10,9 @@ I needed to answer this question for myself so I decided to create the Grocery B
 
 This app:
 
-Provides a graphic to show the user how much they are spending/wasting on food for each month
-Provides a graphic to show the user how much they are spending/wasting on certain types of food
-Lets the user know what food is left in their fridge/cupboards
+- Provides a graphic to show the user how much they are spending/wasting on food for each month
+- Provides a graphic to show the user how much they are spending/wasting on certain types of food
+- Lets the user know what food is left in their fridge/cupboards
 
 
 
